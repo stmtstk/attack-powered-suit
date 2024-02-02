@@ -30,7 +30,7 @@ function serve() {
 }
 
 export default [{
-    input: 'src/main.js',
+    input: 'src_ai/main.js',
     output: {
         sourcemap: true,
         format: 'iife',
@@ -99,7 +99,7 @@ export default [{
         clearScreen: true
     }
 }, {
-    input: 'src/worker.js',
+    input: 'src_ai/worker.js',
     output: {
         sourcemap: true,
         format: 'iife',
@@ -118,7 +118,7 @@ export default [{
     ],
 },
 {
-    input: 'src/content.js',
+    input: 'src_ai/content.js',
     output: {
         sourcemap: true,
         format: 'iife',

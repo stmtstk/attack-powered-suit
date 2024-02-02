@@ -2,34 +2,19 @@
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
     import {
-        //removeFormat,
-        //formatsStore,
-        saveFormats,
-        addFormat,
-    } from "./formats.js";
-    import {
-        api_key,
-        api_url,
-        api_chat_model,
-        system_introduction,
-        save,
+        settings,
     } from "./openai.js"
     import BackButton from "./BackButton.svelte";
-    //import { supportsClipboardItem } from "./Clipboard.js";
 
     const dispatch = createEventDispatcher();
-
-    function newFormat() {
-        addFormat("new format", "", "text/plain");
-    }
 </script>
 
 <BackButton on:back={() => dispatch("showSearch")} />
-<h2>ATT&CK Powered Suit (Help!! My Buddy!)</h2>
-<h3><i class="bi bi-gear-fill" /> Open AI Settings</h3>
+<h2>ATT&CK Powered Suit (New Edition)</h2>
+<h3><i class="bi bi-gear-fill" /> OpenAI Settings</h3>
 
 <div class="gray-box">
-    メタ変数として 云々 <code>{"{description}"}</code>
+    TBD (Description) <code>{"{description}"}</code>
 </div>
 
 <table class="table">
@@ -48,9 +33,7 @@
                 <input
                     type="password"
                     class="form-control"
-                    readonly="readonly"
-                    bind:value={$api_key}
-                    on:input={saveFormats}
+                    bind:value={$settings.api_key}
                 />
             </td>
         </tr>
@@ -63,8 +46,7 @@
                     type="text"
                     class="form-control"
                     readonly="readonly"
-                    bind:value={$api_url}
-                    on:input={saveFormats}
+                    bind:value={$settings.url}
                 />
             </td>
         </tr>
@@ -76,9 +58,7 @@
                 <input
                     type="text"
                     class="form-control"
-                    readonly="readonly"
-                    bind:value={$api_chat_model}
-                    on:input={saveFormats}
+                    bind:value={$settings.model}
                 />
             </td>
         </tr>
@@ -90,20 +70,12 @@
                 <input
                     type="text"
                     class="form-control"
-                    readonly="readonly"
-                    bind:value={$system_introduction}
-                    on:input={saveFormats}
+                    bind:value={$settings.system_introduction}
                 />
             </td>
         </tr>
     </tbody>
 </table>
-
-<p>
-    <button class="btn btn-primary btn-sm" on:click={save}>
-        <i class="bookmark-icon bi" /> Save
-    </button>
-</p>
 
 <p class="credits">
     ATT&CK Powered Suit is published by the <a
@@ -119,15 +91,6 @@
 <p />
 
 <style>
-    .remove-format {
-        cursor: pointer;
-        color: var(--me-ext-orange-dark);
-    }
-
-    .remove-format:hover {
-        color: var(--me-ext-orange-highlighter);
-    }
-
     .credits {
         margin: 0 auto;
         color: var(--bs-gray-600);

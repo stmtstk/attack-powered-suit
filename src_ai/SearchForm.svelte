@@ -63,7 +63,7 @@
         /></a
     >
 
-    <h1>APS (Help!! My Buddy!)</h1>
+    <h1>ATT&CK Powered Suit (New Edition)</h1>
 </div>
 
 <form on:submit={(e) => e.preventDefault()}>

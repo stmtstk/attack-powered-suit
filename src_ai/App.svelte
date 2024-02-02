@@ -8,6 +8,7 @@
     import { initializeBookmarks } from "./bookmarks";
     import { initializeFilters } from "./filters";
     import { initializeFormats } from "./formats";
+    import { initializeAISettings } from "./openai";
 
     const params = new URLSearchParams(window.location.search);
     let selectedPanel;
@@ -16,6 +17,7 @@
         await initializeBookmarks();
         await initializeFormats();
         await initializeFilters();
+        await initializeAISettings();
         // Don't display a view until everything is initialized.
         selectedPanel = params.get("view") || "search";
     });

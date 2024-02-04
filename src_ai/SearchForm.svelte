@@ -13,9 +13,6 @@
         initializeSearch().then(() => {
             const params = new URLSearchParams(window.location.search);
             query = params.get("q") || "";
-            //URL 経由で prompt パラメタもらう
-            prompt = params.get("prompt") || "";
-            console.log(`prompt=${prompt}`)
         });
     });
 

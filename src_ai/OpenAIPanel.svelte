@@ -1,0 +1,149 @@
+<script>
+    import { createEventDispatcher, onMount } from "svelte";
+    /*
+    import { initializeSearch, search } from "./search.js";
+    import { fade } from "svelte/transition";
+    */
+    import BackButton from "./BackButton.svelte";
+
+    import { loadSettings, startToTalk } from "./openai.js"
+
+    const dispatch = createEventDispatcher();
+    let selectedTextValue = ''
+
+    onMount(() => {
+        const params = new URLSearchParams(window.location.search);
+        selectedTextValue = params.get("selected_text") || "";
+        //console.log(`selectedTextValue: ${selectedTextValue}`)
+    });
+
+    function onSettingsButtonClick() {
+        loadSettings()
+    }
+
+    function onStartToTalkButtonClick() {
+        startToTalk()
+    }
+</script>
+
+<BackButton on:back={() => dispatch("showSearch")} />
+<h2>ATT&CK Powered Suit (New Edition)</h2>
+<h3><i class="bi bi-chat-left-dots" /> OpenAI Conversation</h3>
+
+<div class="selected-text-row">
+    <div class="form-floating">
+        <button class="btn btn-primary btn-sm" on:click={onSettingsButtonClick}>
+            <i class="bookmark-icon bi bi-plus-circle-fill" />
+                Load OpenAI Settings
+        </button>
+        <button id="btn_start" class="btn btn-primary btn-sm" on:click={onStartToTalkButtonClick} disabled>
+            <i class="bookmark-icon bi bi-plus-circle-fill" />
+                Start to Talk
+        </button>
+    </div>
+</div>
+
+<br/>
+
+<form>
+    <div class="selected-text-row">
+        <div class="form-floating">
+            <input
+                id="url"
+                type="text"
+                class="form-control"
+                readonly=True
+            />
+            <label for="url">OpenAI URL</label>
+        </div>
+    </div>
+    <br/>
+    <div class="selected-text-row">
+        <div class="form-floating">
+            <input
+                id="model"
+                type="text"
+                class="form-control"
+                readonly=True
+            />
+            <label for="model">OpenAI Model</label>
+        </div>
+    </div>
+    <br/>
+    <div class="selected-text-row">
+        <div class="form-floating">
+            <input
+                id="system_introduction"
+                type="text"
+                class="form-control"
+                readonly=True
+            />
+            <label for="system_introduction">OpenAI System Introduction</label>
+        </div>
+    </div>
+    <br/>
+    <div class="selected-text-row">
+        <div class="form-floating">
+            <textarea
+                id="selectedText"
+                type="text"
+                class="form-control conversation-textarea st-textarea"
+                readonly=True
+                rows="3"
+                value={selectedTextValue}
+            />
+            <label for="selectedText">Your Selected Text</label>
+        </div>
+    </div>
+    <br/>
+    <div class="selected-text-row">
+        <div class="form-floating">
+            <textarea
+                id="OpenAIResponse"
+                type="text"
+                class="form-control conversation-textarea resp-textarea"
+                rows="10"
+                readonly=True
+            />
+            <label for="OpenAIResponse">OpenAI Response</label>
+        </div>
+    </div>
+</form>
+
+<p class="credits">
+    ATT&CK Powered Suit is published by the <a
+        href="https://ctid.mitre-engenuity.org"
+        >Center for Threat-Informed Defense</a
+    >. Special thanks to Toshitaka Satomi from Fujitsu for sharing the idea and
+    code.
+    <i
+        class="bi
+        bi-stars"
+    />
+</p>
+<p />
+
+<style>
+    .credits {
+        margin: 0 auto;
+        color: var(--bs-gray-600);
+        font-size: 0.8em;
+        border-top: 1px solid var(--bs-gray-400);
+        margin-top: 1rem;
+        padding-top: 0.5rem;
+    }
+    /*
+    .selected-text-row {
+        display: block;
+    }
+    */
+    .st-textarea {
+        height: 100px;
+    }
+    .resp-textarea {
+        height: 300px;
+    }
+    .conversation-textarea {
+        resize: none;
+    }
+</style>

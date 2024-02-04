@@ -1,28 +1,25 @@
-import { writable } from "svelte/store"
-import { loadFromStorage, saveToStorage } from "./storage.js"
+import { loadFromStorage  } from "./storage.js"
 
-const defaultSettings = {
-    api_key: "",
-    url: "https://api.openai.com/v1/chat/completions",
-    model: "gpt-3.5-turbo",
-    system_introduction: "You are a helpful assistant",
+export function startToTalk() {
+    console.log('Enter startToTalk')
+    return
 }
 
-export const settings = writable(defaultSettings)
+export function loadSettings(selected_text) {
+    const ai_settings = loadFromStorage('ai_settings')
 
-export async function initializeAISettings() {
-    const storedSettings = await loadFromStorage("ai_settings") ?? {}
-    const newSettings = Object.assign({}, defaultSettings)
-
-    for (const key of Object.keys(newSettings)) {
-        if (settings.hasOwnProperty(key)) {
-            newSettings[key] = storedSettings[key]
-        }
-    }
-    settings.set(newSettings)
-    settings.subscribe(save)
+    const ret = ai_settings.then(
+        result => onSuccessLoadFromStorage(result),
+        error => console.log(error),
+    )
+    return
 }
 
-function save (newSettings) {
-    saveToStorage("ai_settings", newSettings)
+function onSuccessLoadFromStorage (settings) {
+    url.value = settings.url
+    model.value = settings.model
+    system_introduction.value = settings.system_introduction
+    btn_start.disabled = false
+    return
 }
+

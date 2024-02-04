@@ -1,9 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
-    import {
-        settings,
-    } from "./openai.js"
+    import { settings } from "./openai_settings.js"
     import BackButton from "./BackButton.svelte";
 
     const dispatch = createEventDispatcher();

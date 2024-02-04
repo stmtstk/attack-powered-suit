@@ -29,6 +29,12 @@ chrome.contextMenus.create({
     "contexts": ["selection"],
 });
 
+chrome.contextMenus.create({
+    "id": "OpenAI",
+    "title": 'OpenAI',
+    "contexts": ["selection"],
+});
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     var selection = (info.selectionText ?? "").trim();
 
@@ -41,6 +47,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         chrome.tabs.create({ url });
     } else if (info.menuItemId == "lookup") {
         const url = getAttackUrl(selection)
+        chrome.tabs.create({ url });
+    } else if (info.menuItemId == "OpenAI") {
+        console.log(selection)
+        const query = encodeURIComponent(selection);
+        //const url = chrome.runtime.getURL(`index.html?view=openai_settings&selected_text=${query}`);
+        const url = chrome.runtime.getURL(`index.html?view=openai&selected_text=${query}`);
         chrome.tabs.create({ url });
     }
 });

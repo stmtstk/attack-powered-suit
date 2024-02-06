@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "author": "Center for Threat-Informed Defense <ctid@mitre-engenuity.org>",
-  "name": "tstk-ATT&CK Powered Suit",
+  "name": "ATT&CK Powered Suit (New Generation)",
   "description": "Powered Suit puts the MITRE ATT&CK® knowledge base at your fingertips. Instantly search ATT&CK techniques, groups, and more.",
   "version": "1.5.0",
   "icons": {

@@ -31,7 +31,7 @@ chrome.contextMenus.create({
 
 chrome.contextMenus.create({
     "id": "OpenAI",
-    "title": 'OpenAI',
+    "title": 'Ask to OpenAI for "%s"',
     "contexts": ["selection"],
 });
 
@@ -51,7 +51,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     } else if (info.menuItemId == "OpenAI") {
         console.log(selection)
         const query = encodeURIComponent(selection);
-        //const url = chrome.runtime.getURL(`index.html?view=openai_settings&selected_text=${query}`);
         const url = chrome.runtime.getURL(`index.html?view=openai&selected_text=${query}`);
         chrome.tabs.create({ url });
     }

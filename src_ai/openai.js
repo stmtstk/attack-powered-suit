@@ -20,8 +20,8 @@ function onSuccessLoadFromStorage (settings) {
         'Authorization': `Bearer ${settings.api_key}`,
     };
 
-    const input_text = `${selectedText.value} に関連する MITRE ATT&CK Technique ID を Pickup してください`
-    //console.info(input_text)
+    const input_text = settings.prompt.replaceAll("{text}", selectedText.value);
+    console.info(input_text)
 
     const requestBody = {
         model: settings.model,

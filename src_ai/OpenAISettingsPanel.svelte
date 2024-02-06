@@ -12,7 +12,7 @@
 <h3><i class="bi bi-gear-fill" /> OpenAI Settings</h3>
 
 <div class="gray-box">
-    TBD (Description) <code>{"{description}"}</code>
+    You can use a meta variable <code>{"{text}"}</code> in the prompt setting.
 </div>
 
 <table class="table">
@@ -68,6 +68,18 @@
                     type="text"
                     class="form-control"
                     bind:value={$settings.system_introduction}
+                />
+            </td>
+        </tr>
+        <tr out:fade>
+            <td>
+                Prompt
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    bind:value={$settings.prompt}
                 />
             </td>
         </tr>

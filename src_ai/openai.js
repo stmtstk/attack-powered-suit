@@ -42,11 +42,13 @@ function onSuccessLoadFromStorage (settings) {
     //OpenAIResponse.value = '送信完了'
     //return
 
-    fetch(settings.url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(requestBody),
-    })
+    fetch(
+        settings.url,
+        {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(requestBody),
+        })
     .then(response => response.json())
     .then(data => {
         ask_spinner.style.visibility = 'hidden'

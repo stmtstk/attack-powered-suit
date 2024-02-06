@@ -34,7 +34,6 @@ test: ## Run tests
 
 .PHONY: chrome-ext
 chrome-ext: ## Copy Node.js artifacts to Chrome extension directory.
-	##cp -r public/index.html public/ask_my_buddy.html public/global.css public/build public/image browsers/chrome
 	cp -r public/index.html public/global.css public/build public/image browsers/chrome
 
 .PHONY: safari-ext

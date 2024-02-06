@@ -22,6 +22,7 @@ export async function initializeAISettings() {
     }
     settings.set(newSettings)
     settings.subscribe(save)
+    select_openai_model.value = newSettings.model
 }
 
 function save (newSettings) {

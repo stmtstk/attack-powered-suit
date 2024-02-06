@@ -49,14 +49,15 @@
         </tr>
         <tr out:fade>
             <td>
-                Chat Model
+                Chat Model (<code>gpt-3.5-turbo</code>, <code>gpt-4</code> and <code>gpt-4-turbo-preview</code>)
             </td>
             <td>
-                <input
-                    type="text"
-                    class="form-control"
-                    bind:value={$settings.model}
-                />
+                <select id="select_openai_model" class="form-select" aria-label="Default select example" bind:value={$settings.model}>
+                    <option selected>Choose the OpenAI Model</option>
+                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                    <option value="gpt-4">gpt-4</option>
+                    <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
+                </select>
             </td>
         </tr>
         <tr out:fade>

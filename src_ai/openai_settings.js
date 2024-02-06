@@ -15,7 +15,7 @@ export async function initializeAISettings() {
     const newSettings = Object.assign({}, defaultSettings)
 
     for (const key of Object.keys(newSettings)) {
-        if (settings.hasOwnProperty(key)) {
+        if (storedSettings.hasOwnProperty(key)) {
             newSettings[key] = storedSettings[key]
         }
     }

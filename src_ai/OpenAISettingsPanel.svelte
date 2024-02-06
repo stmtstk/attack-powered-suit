@@ -43,7 +43,6 @@
                 <input
                     type="text"
                     class="form-control"
-                    readonly="readonly"
                     bind:value={$settings.url}
                 />
             </td>

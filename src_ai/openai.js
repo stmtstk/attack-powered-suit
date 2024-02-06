@@ -1,13 +1,6 @@
 import { loadFromStorage  } from "./storage.js"
 
-export function startToTalk() {
-    const ai_settings = loadFromStorage('ai_settings')
-
-    return
-}
-
-
-export function loadSettings(selected_text) {
+export function ask_openai(selected_text) {
     const ai_settings = loadFromStorage('ai_settings')
 
     const ret = ai_settings.then(
@@ -21,31 +14,22 @@ function onSuccessLoadFromStorage (settings) {
     url.value = settings.url
     model.value = settings.model
     system_introduction.value = settings.system_introduction
-    //btn_start.disabled = false
 
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${settings.api_key}`,
     };
-    console.log(headers)
-    console.log(ai_settings)
-    return
-    /*
 
-    const input_text = `${selection} に関連する MITRE ATT&CK Technique ID を Pickup してくだ>さい`
-    console.info(input_text)
-    const resp = 'some response'
-    console.info(resp)
-        const url = chrome.runtime.getURL(`ask_my_buddy.html?resp=${resp}`);
-      console.info(url)
-        chrome.tabs.create({ url });
-    return
+    const input_text = `${selectedText.value} に関連する MITRE ATT&CK Technique ID を Pickup してください`
+    //console.info(input_text)
+    //console.info(settings.model)
+
     const requestBody = {
-        model:   chat_model,
+        model: settings.model,
         messages: [
             {
                 role: 'system',
-                content: system_introduction,
+                content: system_introduction.value,
             },
             {
                 role: 'user',
@@ -53,21 +37,26 @@ function onSuccessLoadFromStorage (settings) {
             },
         ],
     };
+    //console.log(settings.url)
+    //console.log(requestBody)
+    console.log(input_text)
 
-        fetch(api_url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(requestBody),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.info(data);
-            console.info(data.choices);
-            const gen_text = data.choices[0].message.content;
-            console.info('ChatGPT gen_text:', gen_text);
-        })
-        .catch(error => console.error('error:', error));
+    fetch(settings.url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(requestBody),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.info(data);
+        const gen_text = data.choices[0].message.content;
+        console.info('ChatGPT gen_text:', gen_text);
+        OpenAIResponse.value = gen_text
+    })
+    .catch(error => {
+        console.error('error:', error);
+        OpenAIResponse.value = error
+    });
     return
-    */
 }
 

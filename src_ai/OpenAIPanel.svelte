@@ -1,12 +1,8 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-    /*
-    import { initializeSearch, search } from "./search.js";
-    import { fade } from "svelte/transition";
-    */
     import BackButton from "./BackButton.svelte";
 
-    import { loadSettings, startToTalk } from "./openai.js"
+    import { ask_openai } from "./openai.js"
 
     const dispatch = createEventDispatcher();
     let selectedTextValue = ''
@@ -14,15 +10,10 @@
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
         selectedTextValue = params.get("selected_text") || "";
-        //console.log(`selectedTextValue: ${selectedTextValue}`)
     });
 
-    function onSettingsButtonClick() {
-        loadSettings()
-    }
-
-    function onStartToTalkButtonClick() {
-        startToTalk()
+    function onAskButtonClick() {
+        ask_openai()
     }
 </script>
 
@@ -32,13 +23,9 @@
 
 <div class="selected-text-row">
     <div class="form-floating">
-        <button class="btn btn-primary btn-sm" on:click={onSettingsButtonClick}>
+        <button class="btn btn-primary btn-sm" on:click={onAskButtonClick}>
             <i class="bookmark-icon bi bi-plus-circle-fill" />
-                Load OpenAI Settings
-        </button>
-        <button id="btn_start" class="btn btn-primary btn-sm" on:click={onStartToTalkButtonClick} disabled>
-            <i class="bookmark-icon bi bi-plus-circle-fill" />
-                Start to Talk
+                Ask OpenAI
         </button>
     </div>
 </div>
@@ -132,11 +119,6 @@
         margin-top: 1rem;
         padding-top: 0.5rem;
     }
-    /*
-    .selected-text-row {
-        display: block;
-    }
-    */
     .st-textarea {
         height: 100px;
     }

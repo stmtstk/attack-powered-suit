@@ -27,6 +27,10 @@
             <i class="bookmark-icon bi bi-plus-circle-fill" />
                 Ask OpenAI
         </button>
+
+    </div>
+    <div id="ask_spinner" class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
     </div>
 </div>
 
@@ -127,5 +131,10 @@
     }
     .conversation-textarea {
         resize: none;
+    }
+    #ask_spinner {
+        width: 1rem;
+        height: 1rem;
+        visibility: hidden;
     }
 </style>

@@ -22,7 +22,6 @@ function onSuccessLoadFromStorage (settings) {
 
     const input_text = `${selectedText.value} に関連する MITRE ATT&CK Technique ID を Pickup してください`
     //console.info(input_text)
-    //console.info(settings.model)
 
     const requestBody = {
         model: settings.model,
@@ -37,9 +36,11 @@ function onSuccessLoadFromStorage (settings) {
             },
         ],
     };
-    //console.log(settings.url)
-    //console.log(requestBody)
     console.log(input_text)
+    ask_spinner.style.visibility = 'visible'
+
+    //OpenAIResponse.value = '送信完了'
+    //return
 
     fetch(settings.url, {
         method: 'POST',
@@ -48,15 +49,15 @@ function onSuccessLoadFromStorage (settings) {
     })
     .then(response => response.json())
     .then(data => {
-        console.info(data);
-        const gen_text = data.choices[0].message.content;
-        console.info('ChatGPT gen_text:', gen_text);
+        ask_spinner.style.visibility = 'hidden'
+        console.info(data)
+        const gen_text = data.choices[0].message.content
+        console.info('ChatGPT gen_text:', gen_text)
         OpenAIResponse.value = gen_text
     })
     .catch(error => {
-        console.error('error:', error);
+        console.error('error:', error)
         OpenAIResponse.value = error
-    });
+    })
     return
 }
-

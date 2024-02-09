@@ -13,7 +13,7 @@ export function ask_openai(selectedText, usePromptSetting) {
 function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
     url.value = settings.url
     model.value = settings.model
-    system_introduction.value = settings.system_introduction
+    system_instruction.value = settings.system_instruction
 
     const headers = {
         'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
         messages: [
             {
                 role: 'system',
-                content: system_introduction.value,
+                content: system_instruction.value,
             },
             {
                 role: 'user',
@@ -44,8 +44,8 @@ function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
     console.log(prompt)
     ask_spinner.style.visibility = 'visible'
 
-    //OpenAIResponse.value = '送信完了'
-    //return
+    OpenAIResponse.value = '送信完了'
+    return
 
     fetch(
         settings.url,

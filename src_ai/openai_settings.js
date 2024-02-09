@@ -5,7 +5,7 @@ const defaultSettings = {
     api_key: "",
     url: "https://api.openai.com/v1/chat/completions",
     model: "gpt-3.5-turbo",
-    system_introduction: "You are a helpful assistant",
+    system_instruction: "You are a helpful assistant",
     prompt: ""
 }
 

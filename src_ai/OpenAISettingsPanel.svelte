@@ -49,7 +49,9 @@
         </tr>
         <tr out:fade>
             <td>
-                Chat Model (<code>gpt-3.5-turbo</code>, <code>gpt-4</code> and <code>gpt-4-turbo-preview</code>)
+                Chat Model
+                <br/>
+                (<code>gpt-3.5-turbo</code>, <code>gpt-4</code> and <code>gpt-4-turbo-preview</code>)
             </td>
             <td>
                 <select id="select_openai_model" class="form-select" aria-label="Default select example" bind:value={$settings.model}>
@@ -62,13 +64,14 @@
         </tr>
         <tr out:fade>
             <td>
-                System Introduction
+                System Instruction
             </td>
             <td>
-                <input
+                <textarea
                     type="text"
-                    class="form-control"
-                    bind:value={$settings.system_introduction}
+                    class="form-control setting-textarea"
+                    rows="3"
+                    bind:value={$settings.system_instruction}
                 />
             </td>
         </tr>
@@ -77,9 +80,10 @@
                 Prompt
             </td>
             <td>
-                <input
+                <textarea
                     type="text"
-                    class="form-control"
+                    class="form-control setting-textarea"
+                    rows="10"
                     bind:value={$settings.prompt}
                 />
             </td>
@@ -108,5 +112,8 @@
         border-top: 1px solid var(--bs-gray-400);
         margin-top: 1rem;
         padding-top: 0.5rem;
+    }
+    .setting-textarea {
+        resize: none;
     }
 </style>

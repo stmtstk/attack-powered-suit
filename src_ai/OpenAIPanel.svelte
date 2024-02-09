@@ -67,12 +67,12 @@
     <div class="selected-text-row">
         <div class="form-floating">
             <textarea
-                id="system_introduction"
+                id="system_instruction"
                 type="text"
                 class="form-control conversation-textarea st-textarea"
                 rows="3"
             />
-            <label for="system_introduction">OpenAI System Introduction</label>
+            <label for="system_instruction">System Instruction</label>
         </div>
     </div>
     <br/>

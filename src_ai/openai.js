@@ -1,16 +1,16 @@
 import { loadFromStorage  } from "./storage.js"
 
-export function ask_openai(selected_text) {
+export function ask_openai(selectedText, usePromptSetting) {
     const ai_settings = loadFromStorage('ai_settings')
 
     const ret = ai_settings.then(
-        result => onSuccessLoadFromStorage(result),
+        result => onSuccessLoadFromStorage(result, selectedText, usePromptSetting),
         error => console.log(error),
     )
     return
 }
 
-function onSuccessLoadFromStorage (settings) {
+function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
     url.value = settings.url
     model.value = settings.model
     system_introduction.value = settings.system_introduction
@@ -20,8 +20,13 @@ function onSuccessLoadFromStorage (settings) {
         'Authorization': `Bearer ${settings.api_key}`,
     };
 
-    const input_text = settings.prompt.replaceAll("{text}", selectedText.value);
-    console.info(input_text)
+    let prompt = ''
+    if (usePromptSetting) {
+        prompt = settings.prompt.replaceAll("{text}", selectedText);
+        OpenAIPrompt.value = prompt
+    } else{
+        prompt = OpenAIPrompt.value
+    }
 
     const requestBody = {
         model: settings.model,
@@ -32,11 +37,11 @@ function onSuccessLoadFromStorage (settings) {
             },
             {
                 role: 'user',
-                content: input_text,
+                content: prompt,
             },
         ],
     };
-    console.log(input_text)
+    console.log(prompt)
     ask_spinner.style.visibility = 'visible'
 
     //OpenAIResponse.value = '送信完了'

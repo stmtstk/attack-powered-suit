@@ -1,19 +1,23 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
+    import { afterUpdate, createEventDispatcher, onMount } from "svelte";
     import BackButton from "./BackButton.svelte";
 
     import { ask_openai } from "./openai.js"
 
     const dispatch = createEventDispatcher();
-    let selectedTextValue = ''
+    let selectedText = ''
 
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
-        selectedTextValue = params.get("selected_text") || "";
+        selectedText = params.get("selected_text") || "";
     });
 
+    afterUpdate(() => {
+        ask_openai(selectedText, true)
+    })
+
     function onAskButtonClick() {
-        ask_openai()
+        ask_openai("", false)
     }
 </script>
 
@@ -27,7 +31,6 @@
             <i class="bookmark-icon bi bi-plus-circle-fill" />
                 Ask OpenAI
         </button>
-
     </div>
     <div id="ask_spinner" class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -63,11 +66,11 @@
     <br/>
     <div class="selected-text-row">
         <div class="form-floating">
-            <input
+            <textarea
                 id="system_introduction"
                 type="text"
-                class="form-control"
-                readonly=True
+                class="form-control conversation-textarea st-textarea"
+                rows="3"
             />
             <label for="system_introduction">OpenAI System Introduction</label>
         </div>
@@ -76,14 +79,12 @@
     <div class="selected-text-row">
         <div class="form-floating">
             <textarea
-                id="selectedText"
+                id="OpenAIPrompt"
                 type="text"
                 class="form-control conversation-textarea st-textarea"
-                readonly=True
                 rows="3"
-                value={selectedTextValue}
             />
-            <label for="selectedText">Your Selected Text</label>
+            <label for="selectedText">Prompt Content</label>
         </div>
     </div>
     <br/>

@@ -1,3 +1,4 @@
+'use marked';
 import { loadFromStorage  } from "./storage.js"
 
 export function ask_openai(selectedText, usePromptSetting) {
@@ -44,9 +45,6 @@ function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
     console.log(prompt)
     ask_spinner.style.visibility = 'visible'
 
-    OpenAIResponse.value = '送信完了'
-    return
-
     fetch(
         settings.url,
         {
@@ -57,10 +55,12 @@ function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
     .then(response => response.json())
     .then(data => {
         ask_spinner.style.visibility = 'hidden'
-        console.info(data)
-        const gen_text = data.choices[0].message.content
-        console.info('ChatGPT gen_text:', gen_text)
-        OpenAIResponse.value = gen_text
+        //console.info(data)
+        const raw = data.choices[0].message.content
+        const html_content = marked.parse(raw)
+        //console.info('ChatGPT raw:', raw)
+        //console.info('html :', html_content)
+        response.innerHTML = html_content
     })
     .catch(error => {
         console.error('error:', error)

@@ -88,16 +88,12 @@
         </div>
     </div>
     <br/>
+    <hr/>
+    <label for="response">OpenAI Response</label>
+    <br/><br/>
     <div class="selected-text-row">
         <div class="form-floating">
-            <textarea
-                id="OpenAIResponse"
-                type="text"
-                class="form-control conversation-textarea resp-textarea"
-                rows="10"
-                readonly=True
-            />
-            <label for="OpenAIResponse">OpenAI Response</label>
+            <div id="response"/>
         </div>
     </div>
 </form>
@@ -126,9 +122,6 @@
     }
     .st-textarea {
         height: 100px;
-    }
-    .resp-textarea {
-        height: 300px;
     }
     .conversation-textarea {
         resize: none;

@@ -43,18 +43,6 @@
     <div class="selected-text-row">
         <div class="form-floating">
             <input
-                id="url"
-                type="text"
-                class="form-control"
-                readonly=True
-            />
-            <label for="url">OpenAI URL</label>
-        </div>
-    </div>
-    <br/>
-    <div class="selected-text-row">
-        <div class="form-floating">
-            <input
                 id="model"
                 type="text"
                 class="form-control"

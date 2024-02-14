@@ -1,4 +1,4 @@
-'use marked'
+import { marked } from 'marked';
 import { loadFromStorage  } from "./storage.js"
 
 export function ask_openai(selectedText, usePromptSetting) {
@@ -12,7 +12,6 @@ export function ask_openai(selectedText, usePromptSetting) {
 }
 
 async function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
-    url.value = settings.url
     model.value = settings.model
     system_instruction.value = settings.system_instruction
     assistant_id.value = settings.assistant_id
@@ -34,9 +33,14 @@ async function onSuccessLoadFromStorage (settings, selectedText, usePromptSettin
     ask_spinner.style.visibility = 'visible'
     if (settings.assistant_id.length == 0) {
         console.log(`Asked to ChatGPT: ${settings.model}`)
+        assistant_id.value = 'This setting is not specified. Uses ChatGPT Model instead'
         fetch_open_ai_chat(settings, headers, prompt)
     } else{
         console.log(`Asked to assistant_id: ${settings.assistant_id}`)
+        system_instruction.value = 'This setting is now disabled (Assistant setting will be used)'
+        system_instruction.disabled = true
+        model.value = 'This setting is now disabled (Assistant setting will be used)'
+        model.disabled = true
         const assistant_info = await fetch_open_ai_assistant(settings, headers, prompt)
     }
     ask_spinner.style.visibility = 'hidden'

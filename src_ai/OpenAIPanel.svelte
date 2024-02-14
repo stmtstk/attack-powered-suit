@@ -66,6 +66,18 @@
     <br/>
     <div class="selected-text-row">
         <div class="form-floating">
+            <input
+                id="assistant_id"
+                type="text"
+                class="form-control"
+                readonly=True
+            />
+            <label for="assistant_id">(Option) Assistant ID</label>
+        </div>
+    </div>
+    <br/>
+    <div class="selected-text-row">
+        <div class="form-floating">
             <textarea
                 id="system_instruction"
                 type="text"

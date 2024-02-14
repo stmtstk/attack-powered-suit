@@ -6,7 +6,8 @@ const defaultSettings = {
     url: "https://api.openai.com/v1/chat/completions",
     model: "gpt-3.5-turbo",
     system_instruction: "You are a helpful assistant",
-    prompt: ""
+    prompt: "",
+    assistant_id: ""
 }
 
 export const settings = writable(defaultSettings)

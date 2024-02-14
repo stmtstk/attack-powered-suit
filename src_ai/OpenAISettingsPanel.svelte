@@ -88,6 +88,17 @@
                 />
             </td>
         </tr>
+        <tr out:fade>
+            <td>
+                (Option) Assistant ID
+            </td>
+            <td>
+                <input
+                    type="text"
+                    class="form-control"
+                    bind:value={$settings.assistant_id}
+                />
+        </tr>
     </tbody>
 </table>
 

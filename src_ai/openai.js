@@ -59,17 +59,30 @@ async function fetch_open_ai_assistant (settings, headers, prompt) {
     // 1. create_thread
     const thread_id = await create_threads(settings, headers, prompt)
     //console.log(`thread_id: ${thread_id}`)
+    if (thread_id == null) {
+        return
+    }
 
     // 2. Create Message
     const message_id = await create_message (headers, thread_id, prompt)
     //console.log(`message_id: ${message_id}`)
+    if (message_id == null) {
+        return
+    }
 
     // 3. Run the Thread
     const run_id = await run_thread(headers, thread_id, settings)
     //console.log(`run_id: ${run_id}`)
+    if (run_id == null) {
+        return
+    }
 
     // 4. wait
-    await wait_run(headers, thread_id, run_id)
+    const status = await wait_run(headers, thread_id, run_id)
+    //console.log(`status: ${status}`)
+    if (status == null) {
+        return
+    }
 
     // 5. Get Messages
     const raw = await get_messages(headers, thread_id)
@@ -80,24 +93,36 @@ async function fetch_open_ai_assistant (settings, headers, prompt) {
 
 async function create_threads (settings, headers, prompt) {
     const url = 'https://api.openai.com/v1/threads'
+    var id = null
+
+    //console.log(url)
+
     const resp = await fetch(
         url,
         {
             method: 'POST',
             headers: headers,
         })
-    const j = await resp.json()
-    //console.log('j: ' + JSON.stringify(j, null, '\t'))
-    return j['id']
+        .then(response => check_http_response(response))
+        .then(j => {
+            if(j != null){
+                //console.log('j: ' + JSON.stringify(j, null, '\t'))
+                id = j['id']
+            }
+        })
+        .catch (e => on_fetch_error(e))
+    return id
 }
 
 async function  create_message (headers, thread_id, prompt) {
     const url = `https://api.openai.com/v1/threads/${thread_id}/messages`
-    //console.log(url)
+    var id = null
     const payload = {
         'role': 'user',
         'content': prompt
     }
+
+    //console.log(url)
     //console.log('payload: ' + JSON.stringify(payload, null, '\t'))
     //console.log('headers: ' + JSON.stringify(headers, null, '\t'))
 
@@ -108,19 +133,27 @@ async function  create_message (headers, thread_id, prompt) {
             headers: headers,
             body: JSON.stringify(payload),
         })
-    const j = await resp.json()
-    //console.log('j: ' + JSON.stringify(j, null, '\t'))
-    return j['id']
-
+        .then(response => check_http_response(response))
+        .then(j => {
+            if(j != null){
+                //console.log('j: ' + JSON.stringify(j, null, '\t'))
+                id = j['id']
+            }
+        })
+        .catch (e => on_fetch_error(e))
+    return id
 }
 
 async function run_thread (headers, thread_id, settings) {
     const url = `https://api.openai.com/v1/threads/${thread_id}/runs`
-    //console.log(`url: ${url}`)
+    var id = null
     const payload = {
         'assistant_id': settings.assistant_id
     }
+
+    //console.log(`url: ${url}`)
     //console.log('payload: ' + JSON.stringify(payload, null, '\t'))
+
     const resp = await fetch(
         url,
         {
@@ -128,14 +161,23 @@ async function run_thread (headers, thread_id, settings) {
             headers: headers,
             body: JSON.stringify(payload),
         })
-    const j = await resp.json()
-    return j['id']
+        .then(response => check_http_response(response))
+        .then(j => {
+            if(j != null){
+                //console.log('j: ' + JSON.stringify(j, null, '\t'))
+                id = j['id']
+            }
+        })
+        .catch (e => on_fetch_error(e))
+    return id
 }
 
 async function wait_run (headers, thread_id, run_id) {
     const url = `https://api.openai.com/v1/threads/${thread_id}/runs/${run_id}`
-    //console.log(`url: ${url}`)
+    var status = null
     var is_complete = false
+
+    //console.log(`url: ${url}`)
 
     while(!is_complete){
         const resp = await fetch(
@@ -143,48 +185,62 @@ async function wait_run (headers, thread_id, run_id) {
             {
                 method: 'GET',
                 headers: headers,
-        }    )
-        const j = await resp.json()
-        const status = j['status']
-        //console.log(`status: ${status}`)
-        if (status == 'completed') {
-            //console.log('done')
+        })
+        .then(response => check_http_response(response))
+        .catch (e => on_fetch_error(e))
+
+        const j = await resp
+        if (j == null){
             is_complete = true
         } else{
-            //console.log('wait. 3secs')
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            //console.log(j)
+            status = j['status']
+            if (status == 'completed') {
+                //console.log('done')
+                is_complete = true
+            } else{
+                //console.log('wait. 3secs')
+                await new Promise(resolve => setTimeout(resolve, 3000))
+            }
         }
     }
-    return
+    return status
 }
 
 async function get_messages(headers, thread_id) {
     const url = `https://api.openai.com/v1/threads/${thread_id}/messages`
+    var value = null
+
     //console.log(`url: ${url}`)
+
     const resp = await fetch(
         url,
         {
             method: 'GET',
             headers: headers,
         })
-    const j = await resp.json()
-    //console.log('j: ' + JSON.stringify(j, null, '\t'))
-    var value = null
-    j['data'].forEach(function(data) {
-        if(data['role'] != 'assistant'){
-            return false
-        }
-        data['content'].forEach(function(content){
-            if(content['type'] != 'text'){
-                return false
+        .then(response => check_http_response(response))
+        .then(j => {
+            if(j != null){
+                //console.log('j: ' + JSON.stringify(j, null, '\t'))
+                j['data'].forEach(function(data) {
+                    if(data['role'] != 'assistant'){
+                        return false
+                    }
+                    data['content'].forEach(function(content){
+                        if(content['type'] != 'text'){
+                            return false
+                        }
+                        value = content['text']['value']
+                        return true
+                    })
+                    if (value != null) {
+                        return true
+                    }
+                })
             }
-            value = content['text']['value']
-            return true
         })
-        if (value != null) {
-            return true
-        }
-    })
+        .catch (e => on_fetch_error(e))
     return value
 }
 
@@ -211,16 +267,30 @@ function fetch_open_ai_chat (settings, headers, prompt) {
             headers: headers,
             body: JSON.stringify(requestBody),
         })
-    .then(response => response.json())
+    .then(response => check_http_response(response))
     .then(data => {
-        const raw = data.choices[0].message.content
-       show_result(raw)
+        if (data != null) {
+            const raw = data.choices[0].message.content
+            show_result(raw)
+        }
     })
-    .catch(error => {
-        console.error(`error: ${error}`)
-        OpenAIResponse.value = error
-    })
+    .catch(e => on_fetch_error(e))
     return
+}
+
+function on_fetch_error(e) {
+    console.error(e)
+    show_result(e.toString())
+    return
+}
+
+function check_http_response(response) {
+    //console.log(response)
+    if (response.status != 200){
+        show_result(`Http Response status: ${response.status}`)
+        return null
+    }
+    return response.json()
 }
 
 function show_result(raw) {

@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import { loadFromStorage  } from "./storage.js"
+import { MODE_CHAT, MODE_ASSISTANTS} from "./openai_settings.js"
 
 export function ask_openai(selectedText, usePromptSetting) {
     const ai_settings = loadFromStorage('ai_settings')
@@ -30,18 +31,23 @@ async function onSuccessLoadFromStorage (settings, selectedText, usePromptSettin
     }
 
     //console.log(`prompt: ${prompt}`)
+    //console.log(`mode: ${settings.mode}`)
     ask_spinner.style.visibility = 'visible'
-    if (settings.assistant_id.length == 0) {
-        console.log(`Asked to ChatGPT: ${settings.model}`)
-        assistant_id.value = 'This setting is not specified. Uses ChatGPT Model instead'
+    if (settings.mode == MODE_CHAT) {
+        //console.log(`Asked to ChatGPT: ${settings.model}`)
+        assistant_id.value = 'This setting is ignored'
         fetch_open_ai_chat(settings, headers, prompt)
-    } else{
-        console.log(`Asked to assistant_id: ${settings.assistant_id}`)
+    } else if (settings.mode = MODE_ASSISTANTS){
+        //console.log(`Asked to assistant_id: ${settings.assistant_id}`)
         system_instruction.value = 'This setting is now disabled (Assistant setting will be used)'
         system_instruction.disabled = true
-        model.value = 'This setting is now disabled (Assistant setting will be used)'
+        model.value = 'This setting is ignored.'
         model.disabled = true
-        const assistant_info = await fetch_open_ai_assistant(settings, headers, prompt)
+        if (settings.assistant_id.length == 0) {
+            alert('Please specify Assistants ID')
+        } else{
+            const assistant_info = await fetch_open_ai_assistant(settings, headers, prompt)
+        }
     }
     ask_spinner.style.visibility = 'hidden'
     return
@@ -183,6 +189,7 @@ async function get_messages(headers, thread_id) {
 }
 
 function fetch_open_ai_chat (settings, headers, prompt) {
+    const url = 'https://api.openai.com/v1/chat/completions'
     const requestBody = {
         model: settings.model,
         messages: [
@@ -198,7 +205,7 @@ function fetch_open_ai_chat (settings, headers, prompt) {
     }
 
     fetch(
-        settings.url,
+        url,
         {
             method: 'POST',
             headers: headers,

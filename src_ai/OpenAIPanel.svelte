@@ -60,7 +60,7 @@
                 class="form-control"
                 readonly=True
             />
-            <label for="assistant_id">(Option) Assistant ID</label>
+            <label for="assistant_id">Assistants ID</label>
         </div>
     </div>
     <br/>

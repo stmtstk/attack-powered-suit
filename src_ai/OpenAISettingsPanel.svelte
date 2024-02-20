@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
+    import { writable } from "svelte/store"
     import { fade } from "svelte/transition";
     import {
         settings,
@@ -11,6 +12,7 @@
     import BackButton from "./BackButton.svelte";
 
     const dispatch = createEventDispatcher();
+    let selected_setting_name = writable('')
 
     onMount(() => {
         initializeAISettings().then(() => {
@@ -28,6 +30,7 @@
         select_openai_model.value = setting.model
         setting_system_instructions.value = setting.system_instructions
         setting_prompt.value = setting.prompt
+        setting_assistant_id.value = setting.assistant_id
         onChangeMode()
         return
     }
@@ -47,9 +50,8 @@
             return
         }
 
-        const name = select_setting_name.value
         for (let setting of $settings) {
-            if (setting.name == name) {
+            if (setting.name == selected_setting_name) {
                 overwrite_form_value(setting)
                 return
             }
@@ -91,7 +93,6 @@
     }
 
     function onSaveButtonClick(){
-
         const name = text_setting_name.value
         if (name.length == 0){
             alert('Please specify setting name')
@@ -117,6 +118,7 @@
             }
         }
         $settings = newSettings
+        alert('Done')
     }
 
     function getNewSetting (name){
@@ -127,6 +129,7 @@
         newSetting.model = select_openai_model.value
         newSetting.setting_system_instructions = setting_system_instructions.value
         newSetting.prompt = setting_prompt.value
+        newSetting.assistant_id = setting_assistant_id.value
         return newSetting
     }
 </script>
@@ -143,7 +146,7 @@
     Choose OpenAI Setting
     <br/>
     {#if $is_setting_ready === true}
-        <select id="select_setting_name" class="form-select" on:change={onChangeSettingName} >
+        <select id="select_setting_name" class="form-select" bind:value={selected_setting_name} on:change={onChangeSettingName} >
         {#each $settings as setting}
             <option value="{setting.name}">{setting.name}</option>
         {/each}

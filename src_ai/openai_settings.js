@@ -19,47 +19,30 @@ const defaultSettings = {
     assistant_id: ""
 }
 
+export let is_setting_ready = writable(false)
+
 export const settings = writable(defaultSettings)
 
 export async function initializeAISettings() {
-    const storedSettings = await loadFromStorage("ai_settings") ?? {}
-    const newSettings = Object.assign({}, defaultSettings)
+    const storedSettings = await loadFromStorage("ai_settings") ?? []
+    const newSettings = Object.assign([])
 
-    for (const key of Object.keys(newSettings)) {
-        if (storedSettings.hasOwnProperty(key)) {
-            newSettings[key] = storedSettings[key]
-        } else{
-            newSettings[key] = defaultSettings[key]
+    for (const storedSetting of storedSettings) {
+        let newSetting = Object.assign({}, defaultSettings)
+        for (const key of Object.keys(storedSetting)) {
+            if (storedSetting.hasOwnProperty(key)) {
+                newSetting[key] = storedSetting[key]
+            } else{
+                newSetting[key] = defaultSettings[key]
+            }
         }
+        newSettings.push(newSetting)
     }
     settings.set(newSettings)
     settings.subscribe(save)
-    select_openai_model.value = newSettings.model
-    select_openai_mode.value = newSettings.mode
-    onChangeMode()
+    is_setting_ready.set(true)
 }
 
-
-export function onChangeMode (){
-    if (select_openai_mode.value == MODE_ASSISTANTS) {
-        onChangeAssistant()
-    } else if (select_openai_mode.value == MODE_CHAT) {
-        onChangeChat()
-    } 
-    return
-}
-
-function onChangeChat () {
-    setting_assistant_id.disabled = true
-    select_openai_model.disabled = false
-    setting_system_instructions.disabled = false
-}
-
-function onChangeAssistant () {
-    setting_assistant_id.disabled = false
-    select_openai_model.disabled = true
-    setting_system_instructions.disabled = true
-}
 
 function save (newSettings) {
     saveToStorage("ai_settings", newSettings)

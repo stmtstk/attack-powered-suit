@@ -22,6 +22,8 @@ async function onSuccessLoadFromStorage (settings, selectedText, usePromptSettin
         'Authorization': `Bearer ${settings.api_key}`,
     }
 
+    //Todo: Fixed for a landing Page
+    /*
     let prompt = ''
     if (usePromptSetting) {
         prompt = settings.prompt.replaceAll("{text}", selectedText)
@@ -29,6 +31,7 @@ async function onSuccessLoadFromStorage (settings, selectedText, usePromptSettin
     } else{
         prompt = OpenAIPrompt.value
     }
+    */
 
     //console.log(`prompt: ${prompt}`)
     //console.log(`mode: ${settings.mode}`)
@@ -43,11 +46,13 @@ async function onSuccessLoadFromStorage (settings, selectedText, usePromptSettin
         system_instruction.disabled = true
         model.value = 'This setting is ignored.'
         model.disabled = true
+        /*
         if (settings.assistant_id.length == 0) {
             alert('Please specify Assistants ID')
         } else{
             const assistant_info = await fetch_open_ai_assistant(settings, headers, prompt)
         }
+        */
     }
     ask_spinner.style.visibility = 'hidden'
     return

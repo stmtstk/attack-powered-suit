@@ -127,7 +127,7 @@
         newSetting.mode = select_openai_mode.value
         newSetting.api_key = open_ai_key.value
         newSetting.model = select_openai_model.value
-        newSetting.setting_system_instructions = setting_system_instructions.value
+        newSetting.system_instructions = setting_system_instructions.value
         newSetting.prompt = setting_prompt.value
         newSetting.assistant_id = setting_assistant_id.value
         return newSetting

@@ -1,29 +1,86 @@
 <script>
     import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+    import { writable } from "svelte/store"
     import BackButton from "./BackButton.svelte";
+    import { MODE_CHAT, MODE_ASSISTANTS} from "./openai_settings.js"
 
-    import { ask_openai } from "./openai.js"
+    import {
+        ask_openai,
+        ai_settings,
+        initializeAIAsk,
+    } from "./openai.js"
 
     const dispatch = createEventDispatcher();
     let selectedText = ''
+    let selected_setting_name = writable('')
 
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
         selectedText = params.get("selected_text") || "";
+        initializeAIAsk()
     });
 
-    afterUpdate(() => {
-        ask_openai(selectedText, true)
-    })
+    function getAISetting(setting_name) {
+        for(let ai_setting of $ai_settings) {
+            if(ai_setting.name == setting_name){
+                return ai_setting
+            }
+        }
+        return null
+    }
+
+    function onChangeSelectSetting(e) {
+        const ai_setting = getAISetting(selected_setting_name)
+        if (ai_setting == null) {
+            alert('Invalid Setting Name')
+            return
+        }
+        overwrite_setting_form(ai_setting)
+    }
+
+    function overwrite_setting_form(ai_setting) {
+        OpenAIPrompt.value = ai_setting.prompt.replaceAll('{text}', selectedText)
+        if(ai_setting.mode == MODE_ASSISTANTS) {
+            model.value = 'This setting is not used by Assistants'
+            assistant_id.value = ai_setting.assistant_id
+            system_instructions.value = 'This setting is not used by Assistants'
+            system_instructions.disabled = true
+        } else if (ai_setting.mode == MODE_CHAT){
+            model.value = ai_setting.model
+            assistant_id.value = 'This setting is not used by ChatGPT'
+            system_instructions.value = ai_setting.system_instructions
+        }
+        return
+    }
 
     function onAskButtonClick() {
-        ask_openai("", false)
+        const ai_setting = getAISetting(selected_setting_name)
+        if (ai_setting == null) {
+            alert('Invalid Setting Name')
+            return
+        }
+        ask_openai(selectedText, ai_setting)
     }
 </script>
 
 <BackButton on:back={() => dispatch("showSearch")} />
 <h2>ATT&CK Powered Suit (New Edition)</h2>
 <h3><i class="bi bi-chat-left-dots" /> OpenAI Conversation</h3>
+
+<div class="selected-text-row">
+    <select
+        id="select_setting_name"
+        class="form-select"
+        bind:value={selected_setting_name}
+        on:change={onChangeSelectSetting}
+    >
+    {#each $ai_settings as ai_setting}
+        <option value="{ai_setting.name}">{ai_setting.name}</option>
+    {/each}
+    </select>
+</div>
+
+<br/>
 
 <div class="selected-text-row">
     <div class="form-floating">
@@ -67,12 +124,12 @@
     <div class="selected-text-row">
         <div class="form-floating">
             <textarea
-                id="system_instruction"
+                id="system_instructions"
                 type="text"
                 class="form-control conversation-textarea st-textarea"
                 rows="3"
             />
-            <label for="system_instruction">System Instruction</label>
+            <label for="system_instructions">System Instructions</label>
         </div>
     </div>
     <br/>

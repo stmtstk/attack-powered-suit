@@ -1,11 +1,10 @@
 import { marked } from 'marked';
 import { writable } from "svelte/store"
 import { loadFromStorage  } from "./storage.js"
-import { MODE_CHAT, MODE_ASSISTANTS} from "./openai_settings.js"
+import { MODE_CHAT, MODE_ASSISTANT} from "./openai_settings.js"
 
 export let is_setting_ready = writable(false)
 export const ai_settings = writable([])
-export let selected_setting_name = writable('')
 
 export async function initializeAIAsk() {
     const storedSettings = await loadFromStorage("ai_settings") ?? []
@@ -40,7 +39,7 @@ export function ask_openai(selectedText, ai_setting) {
     if (ai_setting.mode == MODE_CHAT) {
         //console.log(`Asked to ChatGPT: ${ai_setting.model}`)
         fetch_open_ai_chat(ai_setting, headers, prompt)
-    } else if (ai_setting.mode = MODE_ASSISTANTS){
+    } else if (ai_setting.mode = MODE_ASSISTANT){
         //console.log(`Asked to assistant_id: ${ai_setting.assistant_id}`)
         fetch_open_ai_assistant(ai_setting, headers, prompt)
     }

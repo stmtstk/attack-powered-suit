@@ -5,14 +5,14 @@
     import {
         settings,
         is_setting_ready,
-        MODE_ASSISTANTS,
+        MODE_ASSISTANT,
         MODE_CHAT,
         initializeAISettings
     } from "./openai_settings.js"
     import BackButton from "./BackButton.svelte";
 
     const dispatch = createEventDispatcher();
-    let selected_setting_name = writable('')
+    let selected_configuration_name = writable('')
 
     onMount(() => {
         initializeAISettings().then(() => {
@@ -23,8 +23,8 @@
     });
 
     function overwrite_form_value(setting) {
-        text_setting_name.value = setting.name
-        select_setting_name.value = setting.name
+        text_configuration_name.value = setting.name
+        select_configuration_name.value = setting.name
         select_openai_mode.value = setting.mode
         open_ai_key.value = setting.api_key
         select_openai_model.value = setting.model
@@ -36,7 +36,7 @@
     }
 
     function onChangeMode() {
-        if (select_openai_mode.value == MODE_ASSISTANTS) {
+        if (select_openai_mode.value == MODE_ASSISTANT) {
             onChangeAssistant()
         } else if (select_openai_mode.value == MODE_CHAT) {
             onChangeChat()
@@ -51,7 +51,7 @@
         }
 
         for (let setting of $settings) {
-            if (setting.name == selected_setting_name) {
+            if (setting.name == selected_configuration_name) {
                 overwrite_form_value(setting)
                 return
             }
@@ -81,7 +81,7 @@
         if (ret == false){
             return
         }
-        text_setting_name.value = 'No Name'
+        text_configuration_name.value = 'No Name'
         select_openai_mode.value = MODE_CHAT
         open_ai_key.value = ''
         select_openai_model.value = 'gpt-3.5-turbo'
@@ -93,9 +93,9 @@
     }
 
     function onSaveButtonClick(){
-        const name = text_setting_name.value
+        const name = text_configuration_name.value
         if (name.length == 0){
-            alert('Please specify setting name')
+            alert('Please specify configuration name')
             return
         }
 
@@ -143,10 +143,10 @@
 </div>
 <hr/>
 <div class="gray-box">
-    Choose OpenAI Setting
+    Choose OpenAI Configuration
     <br/>
     {#if $is_setting_ready === true}
-        <select id="select_setting_name" class="form-select" bind:value={selected_setting_name} on:change={onChangeSettingName} >
+        <select id="select_configuration_name" class="form-select" bind:value={selected_configuration_name} on:change={onChangeSettingName} >
         {#each $settings as setting}
             <option value="{setting.name}">{setting.name}</option>
         {/each}
@@ -193,12 +193,12 @@
     <tbody>
         <tr out:fade>
             <td>
-                Setting Name
+                Configuration Name
             </td>
             <td>
                 <input
                     type="text"
-                    id="text_setting_name"
+                    id="text_configuration_name"
                     class="form-control"
                 />
             </td>
@@ -217,7 +217,7 @@
                     on:change={onChangeMode}
                 >
                     <option value="{MODE_CHAT}">{MODE_CHAT}</option>
-                    <option value="{MODE_ASSISTANTS}">{MODE_ASSISTANTS}</option>
+                    <option value="{MODE_ASSISTANT}">{MODE_ASSISTANT}</option>
                 </select>
             </td>
         </tr>

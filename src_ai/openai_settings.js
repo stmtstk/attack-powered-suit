@@ -1,9 +1,8 @@
 import { writable } from "svelte/store"
 import { loadFromStorage, saveToStorage } from "./storage.js"
-//import { select_multiple_value } from "svelte/internal"
 
 
-export const MODE_ASSISTANTS = 'Assistants'
+export const MODE_ASSISTANT = 'Assistant'
 export const MODE_CHAT = 'Chat'
 const DEFAULT_MODE = MODE_CHAT
 const DEFAULT_NAME = 'No name'

@@ -1,8 +1,8 @@
 <script>
-    import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import { writable } from "svelte/store"
     import BackButton from "./BackButton.svelte";
-    import { MODE_CHAT, MODE_ASSISTANTS} from "./openai_settings.js"
+    import { MODE_CHAT, MODE_ASSISTANT} from "./openai_settings.js"
 
     import {
         ask_openai,
@@ -12,7 +12,7 @@
 
     const dispatch = createEventDispatcher();
     let selectedText = ''
-    let selected_setting_name = writable('')
+    let selected_configuration_name = writable('')
 
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
@@ -30,9 +30,9 @@
     }
 
     function onChangeSelectSetting(e) {
-        const ai_setting = getAISetting(selected_setting_name)
+        const ai_setting = getAISetting(selected_configuration_name)
         if (ai_setting == null) {
-            alert('Invalid Setting Name')
+            alert('Invalid Configuration Name')
             return
         }
         overwrite_setting_form(ai_setting)
@@ -40,10 +40,10 @@
 
     function overwrite_setting_form(ai_setting) {
         OpenAIPrompt.value = ai_setting.prompt.replaceAll('{text}', selectedText)
-        if(ai_setting.mode == MODE_ASSISTANTS) {
-            model.value = 'This setting is not used by Assistants'
+        if(ai_setting.mode == MODE_ASSISTANT) {
+            model.value = 'This setting is not used by Assistant'
             assistant_id.value = ai_setting.assistant_id
-            system_instructions.value = 'This setting is not used by Assistants'
+            system_instructions.value = 'This setting is not used by Assistant'
             system_instructions.disabled = true
         } else if (ai_setting.mode == MODE_CHAT){
             model.value = ai_setting.model
@@ -54,9 +54,9 @@
     }
 
     function onAskButtonClick() {
-        const ai_setting = getAISetting(selected_setting_name)
+        const ai_setting = getAISetting(selected_configuration_name)
         if (ai_setting == null) {
-            alert('Invalid Setting Name')
+            alert('Invalid Configuration Name')
             return
         }
         ask_openai(selectedText, ai_setting)
@@ -68,10 +68,11 @@
 <h3><i class="bi bi-chat-left-dots" /> OpenAI Conversation</h3>
 
 <div class="selected-text-row">
+    <label for="select_configuration_name">Choose OpenAI Configuration</label>
     <select
-        id="select_setting_name"
+        id="select_configuration_name"
         class="form-select"
-        bind:value={selected_setting_name}
+        bind:value={selected_configuration_name}
         on:change={onChangeSelectSetting}
     >
     {#each $ai_settings as ai_setting}
@@ -117,7 +118,7 @@
                 class="form-control"
                 readonly=True
             />
-            <label for="assistant_id">Assistants ID</label>
+            <label for="assistant_id">Assistant ID</label>
         </div>
     </div>
     <br/>

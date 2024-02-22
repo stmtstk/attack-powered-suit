@@ -85,9 +85,10 @@
         select_openai_mode.value = MODE_CHAT
         open_ai_key.value = ''
         select_openai_model.value = 'gpt-3.5-turbo'
-        setting_system_instructions.value = 'You are a helpful assistant ??'
+        setting_system_instructions.value = 'Please fill your cool system instructions'
         setting_prompt.value = 'Please fill your cool prompt'
-        setting_assistant_id = ''
+        setting_assistant_id.value = `If you specify ${MODE_ASSISTANT}, please fill your Assistant id`
+        setting_assistant_id.disabled = true
         onChangeMode()
         return
     }

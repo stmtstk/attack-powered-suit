@@ -16,9 +16,7 @@
 
     onMount(() => {
         initializeAISettings().then(() => {
-            if ($settings.length > 0){
-                overwrite_form_value($settings[0])
-            }
+
         });
     });
 
@@ -79,15 +77,29 @@
     }
 
     function onDeleteButtonClick(){
-        alert('Under Construction')
-        return
-    }
-
-    function onNewButtonClick(){
-        const ret = confirm('Discard your setting?')
+        const name = text_configuration_name.value
+        if (name.length == 0){
+            alert('Please specify configuration name')
+            return
+        }
+        const ret = confirm(`Delete your configuration? (${name})`)
         if (ret == false){
             return
         }
+
+        let newSettings = []
+        for (let setting of $settings) {
+            if(setting.name != name){
+                newSettings.push(setting)
+            }
+        }
+        $settings = newSettings
+        alert('Deleted')
+        clear_form()
+        return
+    }
+
+    function clear_form () {
         text_configuration_name.value = 'No Name'
         select_openai_mode.value = MODE_CHAT
         open_ai_key.value = ''
@@ -97,6 +109,15 @@
         setting_assistant_id.value = `If you specify ${MODE_ASSISTANT}, please fill your Assistant id`
         setting_assistant_id.disabled = true
         onChangeMode()
+        return
+    }
+
+    function onNewButtonClick(){
+        const ret = confirm('Discard your configuration?')
+        if (ret == false){
+            return
+        }
+        clear_form()
         return
     }
 
@@ -126,7 +147,7 @@
             }
         }
         $settings = newSettings
-        alert('Done')
+        alert('Saved')
     }
 
     function getNewSetting (name){

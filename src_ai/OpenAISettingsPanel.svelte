@@ -27,10 +27,17 @@
         select_configuration_name.value = setting.name
         select_openai_mode.value = setting.mode
         open_ai_key.value = setting.api_key
-        select_openai_model.value = setting.model
-        setting_system_instructions.value = setting.system_instructions
         setting_prompt.value = setting.prompt
-        setting_assistant_id.value = setting.assistant_id
+
+        if (select_openai_mode.value == MODE_ASSISTANT) {
+            select_openai_model.value = ''
+            setting_system_instructions.value = ''
+            setting_assistant_id.value = setting.assistant_id
+        } else if (select_openai_mode.value == MODE_CHAT) {
+            select_openai_model.value = setting.model
+            setting_system_instructions.value = setting.system_instructions
+            setting_assistant_id.value = ''
+        }
         onChangeMode()
         return
     }
@@ -44,7 +51,7 @@
         return
     }
 
-    function onChangeSettingName (){
+    function onChangeConfigurationName (){
         const ret = confirm('Discard your setting?')
         if (ret == false){
             return
@@ -147,7 +154,7 @@
     Choose OpenAI Configuration
     <br/>
     {#if $is_setting_ready === true}
-        <select id="select_configuration_name" class="form-select" bind:value={selected_configuration_name} on:change={onChangeSettingName} >
+        <select id="select_configuration_name" class="form-select" bind:value={selected_configuration_name} on:change={onChangeConfigurationName} >
         {#each $settings as setting}
             <option value="{setting.name}">{setting.name}</option>
         {/each}

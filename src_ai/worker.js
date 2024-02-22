@@ -31,7 +31,7 @@ chrome.contextMenus.create({
 
 chrome.contextMenus.create({
     "id": "OpenAI",
-    "title": 'Ask to OpenAI for "%s"',
+    "title": 'Ask OpenAI for "%s"',
     "contexts": ["selection"],
 });
 

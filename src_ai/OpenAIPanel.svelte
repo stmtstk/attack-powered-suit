@@ -12,7 +12,8 @@
 
     const dispatch = createEventDispatcher();
     let selectedText = ''
-    let selected_configuration_name = writable('')
+    const DEFAULT_CONFIGURATION_NAME = ''
+    let selected_configuration_name = writable(DEFAULT_CONFIGURATION_NAME)
 
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
@@ -30,7 +31,11 @@
     }
 
     function onChangeSelectSetting(e) {
-        const ai_setting = getAISetting(selected_configuration_name)
+        if ($selected_configuration_name == DEFAULT_CONFIGURATION_NAME) {
+            alert('Choose Configuration Name')
+            return
+        }
+        const ai_setting = getAISetting($selected_configuration_name)
         if (ai_setting == null) {
             alert('Invalid Configuration Name')
             return
@@ -54,7 +59,7 @@
     }
 
     function onAskButtonClick() {
-        const ai_setting = getAISetting(selected_configuration_name)
+        const ai_setting = getAISetting($selected_configuration_name)
         if (ai_setting == null) {
             alert('Invalid Configuration Name')
             return
@@ -68,13 +73,13 @@
 <h3><i class="bi bi-chat-left-dots" /> OpenAI Conversation</h3>
 
 <div class="selected-text-row">
-    <label for="select_configuration_name">Choose OpenAI Configuration</label>
     <select
-        id="select_configuration_name"
+        id="select_ask_configuration_name"
         class="form-select"
-        bind:value={selected_configuration_name}
+        bind:value={$selected_configuration_name}
         on:change={onChangeSelectSetting}
     >
+        <option value={DEFAULT_CONFIGURATION_NAME}>Choose OpenAI Configuration</option>
     {#each $ai_settings as ai_setting}
         <option value="{ai_setting.name}">{ai_setting.name}</option>
     {/each}

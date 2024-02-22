@@ -5,18 +5,11 @@ import { MODE_CHAT, MODE_ASSISTANT} from "./openai_settings.js"
 
 export let is_setting_ready = writable(false)
 export const ai_settings = writable([])
+export let selected_configuration_name = writable('-1')
 
 export async function initializeAIAsk() {
     const storedSettings = await loadFromStorage("ai_settings") ?? []
     ai_settings.set(storedSettings)
-    is_setting_ready.set(true)
-}
-
-async function onSuccessLoadFromStorage (settings, selectedText, usePromptSetting) {
-    model.value = settings.model
-    system_instructions.value = settings.system_instructions
-    assistant_id.value = settings.assistant_id
-    ai_settings.set(settings)
     is_setting_ready.set(true)
     return
 }

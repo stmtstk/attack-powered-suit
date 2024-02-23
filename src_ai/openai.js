@@ -1,41 +1,52 @@
-import { marked } from "marked";
 import { writable } from "svelte/store";
 import { loadFromStorage } from "./storage.js";
 import { modeChat, modeAssistant } from "./openai_settings.js";
 
-export let isSettingReady = writable(false);
+export let isSettingReady = false;
 export const aiSettings = writable([]);
-export let selectedConfigurationName = writable("-1");
+export let selectedConfigurationName = "-1";
 
 export async function initializeAIAsk() {
     const storedSettings = (await loadFromStorage("ai_settings")) ?? [];
     aiSettings.set(storedSettings);
-    isSettingReady.set(true);
+    isSettingReady = true;
     return;
 }
 
-export function askOpenAI(selectedText, aiSetting) {
-    //console.dir(selectedText)
+export async function askOpenAI(aiSetting, prompt, systemInstructions) {
     //console.dir(ai_setting)
     const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${aiSetting.api_key}`,
     };
     //console.dir(headers)
-    const prompt = OpenAIPrompt.value;
 
     //console.log(`prompt: ${prompt}`)
     //console.log(`mode: ${ai_setting.mode}`)
-    ask_spinner.style.visibility = "visible";
 
+    let content = "";
     if (aiSetting.mode == modeChat) {
         //console.log(`Asked to ChatGPT: ${ai_setting.model}`)
-        fetchOpenAIChat(aiSetting, headers, prompt);
+        await fetchOpenAIChat(aiSetting, headers, prompt, systemInstructions)
+            .then((ret) => {
+                //console.log(ret);
+                content = ret;
+            })
+            .catch((e) => {
+                throw e;
+            });
     } else if ((aiSetting.mode = modeAssistant)) {
         //console.log(`Asked to assistant_id: ${ai_setting.assistant_id}`)
-        fetchOpenAIAssistant(aiSetting, headers, prompt);
+        await fetchOpenAIAssistant(aiSetting, headers, prompt)
+            .then((ret) => {
+                //console.log(ret);
+                content = ret;
+            })
+            .catch((e) => {
+                throw e;
+            });
     }
-    return;
+    return content;
 }
 
 async function fetchOpenAIAssistant(settings, headers, prompt) {
@@ -45,40 +56,34 @@ async function fetchOpenAIAssistant(settings, headers, prompt) {
     const threadID = await createThreads(settings, headers, prompt);
     //console.log(`thread_id: ${thread_id}`)
     if (threadID == null) {
-        ask_spinner.style.visibility = "hidden";
-        return;
+        return "";
     }
 
     // 2. Create Message
     const messageID = await createMessage(headers, threadID, prompt);
     //console.log(`message_id: ${message_id}`)
     if (messageID == null) {
-        ask_spinner.style.visibility = "hidden";
-        return;
+        return "";
     }
 
     // 3. Run the Thread
     const runID = await runThread(headers, threadID, settings);
     //console.log(`run_id: ${run_id}`)
     if (runID == null) {
-        ask_spinner.style.visibility = "hidden";
-        return;
+        return "";
     }
 
     // 4. wait
     const status = await waitRun(headers, threadID, runID);
     //console.log(`status: ${status}`)
     if (status == null) {
-        ask_spinner.style.visibility = "hidden";
-        return;
+        return "";
     }
 
     // 5. Get Messages
     const raw = await getMessages(headers, threadID);
     //console.log(`raw: ${raw}`)
-    showResult(raw);
-    ask_spinner.style.visibility = "hidden";
-    return;
+    return raw;
 }
 
 async function createThreads(settings, headers, prompt) {
@@ -87,7 +92,7 @@ async function createThreads(settings, headers, prompt) {
 
     //console.log(url)
 
-    const resp = await fetch(url, {
+    await fetch(url, {
         method: "POST",
         headers: headers,
     })
@@ -224,14 +229,14 @@ async function getMessages(headers, threadID) {
     return value;
 }
 
-function fetchOpenAIChat(settings, headers, prompt) {
+async function fetchOpenAIChat(settings, headers, prompt, systemInstructions) {
     const url = "https://api.openai.com/v1/chat/completions";
     const requestBody = {
         model: settings.model,
         messages: [
             {
                 role: "system",
-                content: system_instructions.value,
+                content: systemInstructions,
             },
             {
                 role: "user",
@@ -240,7 +245,8 @@ function fetchOpenAIChat(settings, headers, prompt) {
         ],
     };
 
-    fetch(url, {
+    let ret = "";
+    await fetch(url, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(requestBody),
@@ -248,34 +254,24 @@ function fetchOpenAIChat(settings, headers, prompt) {
         .then((response) => checkHttpResponse(response))
         .then((data) => {
             if (data != null) {
-                const raw = data.choices[0].message.content;
-                showResult(raw);
-                ask_spinner.style.visibility = "hidden";
+                ret = data.choices[0].message.content;
             }
         })
-        .catch((e) => onFetchError(e));
-    return;
+        .catch((e) => {
+            throw e;
+        });
+    //console.dir(ret);
+    return ret;
 }
 
 function onFetchError(e) {
-    console.error(e);
-    showResult(e.toString());
-    return;
+    //console.error(e);
+    return e.toString();
 }
 
 function checkHttpResponse(response) {
-    //console.log(response)
     if (response.status != 200) {
-        showResult(`Http Response status: ${response.status}`);
-        return null;
+        throw new Error(`Http Response status: ${response.status}`);
     }
     return response.json();
-}
-
-function showResult(raw) {
-    const htmlContent = marked.parse(raw);
-    //console.info(`ChatGPT raw: ${raw}`)
-    //console.info(`html : ${html_content}`)
-    response.innerHTML = htmlContent;
-    return;
 }

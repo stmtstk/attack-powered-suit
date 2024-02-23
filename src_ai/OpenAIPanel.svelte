@@ -1,15 +1,29 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import { marked } from "marked";
     import BackButton from "./BackButton.svelte";
     import { modeChat, modeAssistant } from "./openai_settings.js";
 
     import { askOpenAI, aiSettings, initializeAIAsk } from "./openai.js";
 
     const dispatch = createEventDispatcher();
-    let selectedText = "";
     const defaultConfigurationName = "";
-    let selectedConfigurationName = writable(defaultConfigurationName);
+
+    let selectedText = "";
+    let selectedConfigurationName = defaultConfigurationName;
+    let assistantIDValue = "";
+    let modelValue = "";
+    let systemInstructionsValue = "";
+    let systemInstructionsReadOnly = false;
+    let openAIPromptValue = "";
+    let isSpinnerVisible = false;
+    let responseDiv;
+    let askSpinnerDiv;
+
+    const idModel = "model";
+    const idAssistantID = "assistantID";
+    const idSystemInstructions = "systemInstructions";
+    const idOpenAIPrompt = "openAIPrompt";
 
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
@@ -27,11 +41,11 @@
     }
 
     function onChangeSelectSetting(e) {
-        if ($selectedConfigurationName == defaultConfigurationName) {
+        if (selectedConfigurationName == defaultConfigurationName) {
             alert("Choose Configuration Name");
             return;
         }
-        const aiSetting = getAISetting($selectedConfigurationName);
+        const aiSetting = getAISetting(selectedConfigurationName);
         if (aiSetting == null) {
             alert("Invalid Configuration Name");
             return;
@@ -40,30 +54,44 @@
     }
 
     function overwriteSettingForm(aiSetting) {
-        OpenAIPrompt.value = aiSetting.prompt.replaceAll(
-            "{text}",
-            selectedText
-        );
+        openAIPromptValue = aiSetting.prompt.replaceAll("{text}", selectedText);
         if (aiSetting.mode == modeAssistant) {
-            model.value = "This setting is not used by Assistant";
-            assistant_id.value = aiSetting.assistant_id;
-            system_instructions.value = "This setting is not used by Assistant";
-            system_instructions.disabled = true;
+            modelValue = "This setting is not used by Assistant";
+            assistantIDValue = aiSetting.assistant_id;
+            systemInstructionsValue = "This setting is not used by Assistant";
+            systemInstructionsReadOnly = true;
         } else if (aiSetting.mode == modeChat) {
-            model.value = aiSetting.model;
-            assistant_id.value = "This setting is not used by ChatGPT";
-            system_instructions.value = aiSetting.system_instructions;
+            modelValue = aiSetting.model;
+            assistantIDValue = "This setting is not used by ChatGPT";
+
+            systemInstructionsValue = aiSetting.system_instructions;
+            systemInstructionsReadOnly = false;
         }
         return;
     }
 
-    function onAskButtonClick() {
-        const aiSetting = getAISetting($selectedConfigurationName);
+    async function onAskButtonClick() {
+        const aiSetting = getAISetting(selectedConfigurationName);
         if (aiSetting == null) {
             alert("Invalid Configuration Name");
             return;
         }
-        askOpenAI(selectedText, aiSetting);
+
+        isSpinnerVisible = true;
+        responseDiv.innerHTML = "";
+
+        let htmlContent = "";
+        await askOpenAI(aiSetting, openAIPromptValue, systemInstructionsValue)
+            .then((ret) => {
+                htmlContent = marked.parse(ret);
+            })
+            .catch((e) => {
+                console.error(e);
+                htmlContent = e.toString();
+            })
+            .finally(() => {});
+        responseDiv.innerHTML = htmlContent;
+        isSpinnerVisible = false;
     }
 </script>
 
@@ -73,9 +101,8 @@
 
 <div class="selected-text-row">
     <select
-        id="select_ask_configuration_name"
         class="form-select"
-        bind:value={$selectedConfigurationName}
+        bind:value={selectedConfigurationName}
         on:change={onChangeSelectSetting}
     >
         <option value={defaultConfigurationName}
@@ -96,7 +123,13 @@
             Ask OpenAI
         </button>
     </div>
-    <div id="ask_spinner" class="spinner-border text-primary" role="status">
+    <div
+        bind:this={askSpinnerDiv}
+        class="spinner-border text-primary {isSpinnerVisible
+            ? 'ask-spinner-visible'
+            : 'ask-spinner-hidden'}"
+        role="status"
+    >
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
@@ -107,48 +140,53 @@
     <div class="selected-text-row">
         <div class="form-floating">
             <input
-                id="model"
+                id={idModel}
                 type="text"
                 class="form-control"
                 readonly="True"
+                bind:value={modelValue}
             />
-            <label for="model">OpenAI Model</label>
+            <label for={idModel}>OpenAI Model</label>
         </div>
     </div>
     <br />
     <div class="selected-text-row">
         <div class="form-floating">
             <input
-                id="assistant_id"
+                id={idAssistantID}
                 type="text"
                 class="form-control"
                 readonly="True"
+                bind:value={assistantIDValue}
             />
-            <label for="assistant_id">Assistant ID</label>
+            <label for={idAssistantID}>Assistant ID</label>
         </div>
     </div>
     <br />
     <div class="selected-text-row">
         <div class="form-floating">
             <textarea
-                id="system_instructions"
+                id={idSystemInstructions}
                 type="text"
                 class="form-control conversation-textarea st-textarea"
                 rows="3"
+                readonly={systemInstructionsReadOnly}
+                bind:value={systemInstructionsValue}
             />
-            <label for="system_instructions">System Instructions</label>
+            <label for={idSystemInstructions}>System Instructions</label>
         </div>
     </div>
     <br />
     <div class="selected-text-row">
         <div class="form-floating">
             <textarea
-                id="OpenAIPrompt"
+                id={idOpenAIPrompt}
                 type="text"
                 class="form-control conversation-textarea st-textarea"
                 rows="3"
+                bind:value={openAIPromptValue}
             />
-            <label for="selectedText">Prompt Content</label>
+            <label for={idOpenAIPrompt}>Prompt Content</label>
         </div>
     </div>
     <br />
@@ -157,7 +195,7 @@
     <br /><br />
     <div class="selected-text-row">
         <div class="form-floating">
-            <div id="response" />
+            <div bind:this={responseDiv} />
         </div>
     </div>
 </form>
@@ -190,9 +228,12 @@
     .conversation-textarea {
         resize: none;
     }
-    #ask_spinner {
+    .ask-spinner-visible {
         width: 1rem;
         height: 1rem;
+        visibility: visible;
+    }
+    .ask-spinner-hidden {
         visibility: hidden;
     }
 </style>

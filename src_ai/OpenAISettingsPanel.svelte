@@ -19,7 +19,6 @@
     onMount(() => {
         initializeAISettings().then(() => {});
     });
-
     function overwrite_form_value(setting) {
         text_configuration_name.value = setting.name;
         select_configuration_name.value = setting.name;
@@ -165,7 +164,7 @@
 </script>
 
 <BackButton on:back={() => dispatch("showSearch")} />
-<h2>ATT&CK Powered Suit (New Edition)</h2>
+<h2>ATT&CK Powered Suit (New Generation)</h2>
 <h3><i class="bi bi-gear-fill" /> OpenAI Settings</h3>
 
 <div class="gray-box">

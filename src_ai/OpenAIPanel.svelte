@@ -96,7 +96,7 @@
 </script>
 
 <BackButton on:back={() => dispatch("showSearch")} />
-<h2>ATT&CK Powered Suit (New Edition)</h2>
+<h2>ATT&CK Powered Suit (New Generation)</h2>
 <h3><i class="bi bi-chat-left-dots" /> OpenAI Conversation</h3>
 
 <div class="selected-text-row">

@@ -14,15 +14,15 @@ export async function initializeAIAsk() {
 }
 
 export async function askOpenAI(aiSetting, prompt, systemInstructions) {
-    //console.dir(ai_setting)
+    //console.dir(aiSetting);
     const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${aiSetting.api_key}`,
     };
-    //console.dir(headers)
+    //console.dir(headers);
 
-    //console.log(`prompt: ${prompt}`)
-    //console.log(`mode: ${ai_setting.mode}`)
+    //console.log(`prompt: ${prompt}`);
+    //console.log(`mode: ${aiSetting.mode}`);
 
     let content = "";
     if (aiSetting.mode == modeChat) {
@@ -54,35 +54,35 @@ async function fetchOpenAIAssistant(settings, headers, prompt) {
 
     // 1. create_thread
     const threadID = await createThreads(settings, headers, prompt);
-    //console.log(`thread_id: ${thread_id}`)
+    //console.log(`threadID: ${threadID}`);
     if (threadID == null) {
         return "";
     }
 
     // 2. Create Message
     const messageID = await createMessage(headers, threadID, prompt);
-    //console.log(`message_id: ${message_id}`)
+    //console.log(`messageID: ${messageID}`);
     if (messageID == null) {
         return "";
     }
 
     // 3. Run the Thread
     const runID = await runThread(headers, threadID, settings);
-    //console.log(`run_id: ${run_id}`)
+    //console.log(`runID: ${runID}`);
     if (runID == null) {
         return "";
     }
 
     // 4. wait
     const status = await waitRun(headers, threadID, runID);
-    //console.log(`status: ${status}`)
+    //console.log(`status: ${status}`);
     if (status == null) {
         return "";
     }
 
     // 5. Get Messages
     const raw = await getMessages(headers, threadID);
-    //console.log(`raw: ${raw}`)
+    //console.log(`raw: ${raw}`);
     return raw;
 }
 
@@ -166,7 +166,7 @@ async function waitRun(headers, threadID, runID) {
     var status = null;
     var isComplete = false;
 
-    //console.log(`url: ${url}`)
+    //console.log(`url: ${url}`);
 
     while (!isComplete) {
         const resp = await fetch(url, {
@@ -180,13 +180,13 @@ async function waitRun(headers, threadID, runID) {
         if (j == null) {
             isComplete = true;
         } else {
-            //console.log(j)
+            //console.log(j);
             status = j["status"];
             if (status == "completed") {
-                //console.log('done')
+                //console.log("done");
                 isComplete = true;
             } else {
-                //console.log('wait. 3secs')
+                //console.log("wait. 3secs");
                 await new Promise((resolve) => setTimeout(resolve, 3000));
             }
         }

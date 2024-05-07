@@ -60,7 +60,7 @@
         /></a
     >
 
-    <h1>ATT&amp;CK Powered Suit</h1>
+    <h1>ATT&CK Powered Suit (New Generation)</h1>
 </div>
 
 <form on:submit={(e) => e.preventDefault()}>
@@ -87,6 +87,11 @@
                 class="bi bi-gear"
                 title="View settings"
                 on:click={() => dispatch("showSettings")}
+            />
+            <i
+                class="bi bi-robot"
+                title="View OpenAI settings"
+                on:click={() => dispatch("showOpenAISettings")}
             />
         </div>
     </div>

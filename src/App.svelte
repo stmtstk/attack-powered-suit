@@ -4,9 +4,12 @@
     import BookmarksPanel from "./BookmarksPanel.svelte";
     import SearchPanel from "./SearchPanel.svelte";
     import SettingsPanel from "./SettingsPanel.svelte";
+    import OpenAISettingsPanel from "./OpenAISettingsPanel.svelte";
+    import OpenAIPanel from "./OpenAIPanel.svelte";
     import { initializeBookmarks } from "./bookmarks";
     import { initializeFilters } from "./filters";
     import { initializeFormats } from "./formats";
+    import { initializeAISettings } from "./openai_settings";
 
     const params = new URLSearchParams(window.location.search);
     let selectedPanel;
@@ -15,6 +18,7 @@
         await initializeBookmarks();
         await initializeFormats();
         await initializeFilters();
+        await initializeAISettings();
         // Don't display a view until everything is initialized.
         selectedPanel = params.get("view") || "search";
     });
@@ -25,14 +29,25 @@
         <SearchPanel
             on:showBookmarks={() => (selectedPanel = "bookmarks")}
             on:showSettings={() => (selectedPanel = "settings")}
-        }
+            on:showOpenAISettings={() => (selectedPanel = "openai_settings")}
+            on:showOpenAI={() => (selectedPanel = "openai")}
         />
     </div>
+
     <div class:d-none={selectedPanel != "bookmarks"}>
         <BookmarksPanel on:showSearch={() => (selectedPanel = "search")} />
     </div>
+
     <div class:d-none={selectedPanel != "settings"}>
         <SettingsPanel on:showSearch={() => (selectedPanel = "search")} />
+    </div>
+
+    <div class:d-none={selectedPanel != "openai_settings"}>
+        <OpenAISettingsPanel on:showSearch={() => (selectedPanel = "search")} />
+    </div>
+
+    <div class:d-none={selectedPanel != "openai"}>
+        <OpenAIPanel on:showSearch={() => (selectedPanel = "search")} />
     </div>
 </main>
 
